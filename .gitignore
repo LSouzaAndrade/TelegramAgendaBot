@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Extensões de sessão do Telegram
+*.session
+*.session-journal
+
 # C extensions
 *.so
 
