@@ -1,5 +1,5 @@
 import os
-from db_handler import init_db, save_message
+from utils.db_handler import init_db, save_message
 from dotenv import load_dotenv
 from telethon import TelegramClient, events
 
@@ -15,11 +15,9 @@ client = TelegramClient('message_listener', api_id=TELEGRAM_API_ID, api_hash=TEL
 async def listener(event):
     if event.chat_id == int(TELEGRAM_GROUP_CHAT_ID):
         message_id = event.message.id
-        reply_to_message_id = ''
-        if event.message.reply_to_msg_id:
-            reply_to_message_id = event.message.reply_to_msg_id
-        content = event.text
-        save_message(message_id, reply_to_message_id, content)
+        reply_to_message_id = event.message.reply_to_msg_id if event.message.reply_to_msg_id else None
+        content = event.text if event.text != '' else None
+        save_message(message_id=message_id, reply_to_message_id=reply_to_message_id, content=content)
 
 init_db()
 client.start(bot_token=TELEGRAM_BOT_TOKEN)
