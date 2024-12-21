@@ -8,8 +8,8 @@ def init_db():
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS messages (
                         message_id INTEGER PRIMARY KEY,
-                        reply_to_message_id INTEGER,
-                        content TEXT NOT NULL)''')
+                        reply_to_message_id INTEGER DEFAULT NULL,
+                        content TEXT DEFAULT NULL)''')
     conn.commit()
     conn.close()
 
