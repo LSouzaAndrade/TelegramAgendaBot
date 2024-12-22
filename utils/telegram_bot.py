@@ -1,5 +1,5 @@
 import os
-from utils.db_handler import init_db, save_message
+from db_handler import init_db, save_message
 from dotenv import load_dotenv
 from telethon import TelegramClient, events
 
