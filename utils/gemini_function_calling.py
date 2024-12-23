@@ -29,20 +29,26 @@ def tools_parameters(mode):
 from enum import Enum
 
 class Objects(Enum):
-    OBJECT_1 = 'BYD Dolphin Mini'
-    OBJECT_2 = 'Volkswagen Gol'
-    OBJECT_3 = 'Chevrolet S10'
+    OBJECT_1 = 'Apontador'
+    OBJECT_2 = 'Borracha'
+    OBJECT_3 = 'Caneta'
 
-def schedule_object(object: Objects, project_number: int, start_date: str, start_time: str, end_date: str, end_time: str):
+def schedule_object(reservation_object: Objects, start_datetime: str, end_datetime: str) -> dict:
     """
     Schedule the object according to the information given.
 
     Args:
-        object (Enum): The object to be reserved.
-        project_number (int): The project in which the object will be used.
-        start_date (str): Reservation start date in dd-mm-yyyy format.
-        start_time (str): Reservation start time in %H:%M format.
-        end_date (str): Reservation end date in dd-mm-yyyy format.
-        end_time (str): Reservation end time in %H:%M format.
+        reservation_object (Enum): The object to be reserved.
+        start_datetime (str): Reservation start in ISO 8601 format (yyyy-mm-dd HH:MM).
+        end_datetime (str): Reservation end in ISO 8601 format (yyyy-mm-dd HH:MM).
+
+    Returns:
+        operation_result (bool): True if the reservation was successful, False otherwise.
     """
-    print('Houve uma tentativa de function calling')
+    return {'operation_result': False}
+
+function_map = {
+    'schedule_object': schedule_object
+}
+
+__all__ = ['schedule_object', 'function_map']
