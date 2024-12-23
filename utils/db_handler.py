@@ -1,27 +1,53 @@
 import sqlite3
 
 
-db_name = 'messages.db'
+db_name = 'reservations.db'
 
-def init_db():
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS messages (
-                        message_id INTEGER PRIMARY KEY,
-                        reply_to_message_id INTEGER DEFAULT NULL,
-                        content TEXT DEFAULT NULL)''')
-    conn.commit()
-    conn.close()
+def with_database(db_name):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                conn = sqlite3.connect(db_name)
+                cursor = conn.cursor()
+                result = func(cursor, *args, **kwargs)
+                conn.commit()
+                return result
+            except sqlite3.Error as e:
+                print(f"Erro ao executar a função no banco de dados: {e}")
+            finally:
+                if conn:
+                    conn.close()
+        return wrapper
+    return decorator
 
-def save_message(message_id, reply_to_message_id, content):
-    try:
-        conn = sqlite3.connect(db_name)
-        cursor = conn.cursor()
-        cursor.execute('INSERT OR IGNORE INTO messages (message_id, reply_to_message_id, content) VALUES (?, ?, ?)', 
-                        (message_id, reply_to_message_id, content))
-        conn.commit()
+@with_database(db_name)
+def init_db(cursor):
+    cursor.execute('''CREATE TABLE IF NOT EXISTS reservations (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        reservation_object TEXT NOT NULL,
+                        start_datetime TEXT NOT NULL,
+                        end_datetime TEXT NOT NULL)''')
 
-    except sqlite3.Error as e:
-        print(f'Erro ao salvar mensagem no banco de dados: {e}')
-    finally:
-        conn.close()
+@with_database(db_name)
+def check_reservation_availability(cursor, reservation_object, start_datetime, end_datetime):
+    cursor.execute('''SELECT 1 
+                        FROM reservations
+                        WHERE reservation_object = ?
+                            AND (
+                                (start_datetime < ? AND end_datetime > ?)
+                                OR (start_datetime < ? AND end_datetime > ?)
+                                OR (start_datetime >= ? AND end_datetime <= ?)
+                            )
+                        LIMIT 1''',
+                        (reservation_object, start_datetime, start_datetime, 
+                         end_datetime, end_datetime, start_datetime, end_datetime))
+    result = cursor.fetchone()
+    return result is not None
+
+@with_database(db_name)
+def insert_reservation(cursor, reservation_object, start_datetime, end_datetime):
+    cursor.execute('''INSERT INTO reservations 
+                    (reservation_object, start_datetime, end_datetime)
+                    VALUES (?, ?, ?)''',
+                    (reservation_object, start_datetime, end_datetime))
+    return True
