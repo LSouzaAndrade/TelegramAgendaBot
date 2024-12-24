@@ -1,9 +1,16 @@
 import json
+import os
+from dotenv import load_dotenv
 from openai import OpenAI
 
 
+load_dotenv()
+api_key = os.environ.get('OPENAI_API_KEY')
+
 class ChatInstance:
-    def __init__(self, api_key, model, function_map={}, system_prompt=None, tools=None):
+    def __init__(self, model, api_key=api_key, function_map={}, system_prompt=None, tools=None):
+        if api_key is None:
+            raise ValueError("API key is required. Set it via the OPENAI_API_KEY environment variable or pass it explicitly.")
         self.client = OpenAI(api_key=api_key)
         self.conversation_history = [{'role': 'system', 'content': system_prompt}] if system_prompt else []
         self.function_map = function_map
