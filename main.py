@@ -1,7 +1,7 @@
 from datetime import datetime
-from utils.GPT_API_handler import ChatInstance
+from utils.gpt_api_handler import ChatInstance
 from utils.telegram_bot import *
-from utils.Tool_functions import function_map, tools
+from utils.tool_functions import function_map, tools
 
 
 model = 'gpt-4o-mini'
