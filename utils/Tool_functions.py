@@ -1,44 +1,64 @@
-def get_weather(location, unit):
-    print('Chamada de temperatura para', location, 'em', unit, 'executada.')
-    return {'value': 25}
+from utils.db_handler import insert_reservation, check_reservation_availability
 
-def get_stock_price(symbol):
-    print('Chamada de preço de ação para', symbol, 'executada.')
-    return {'value': 100}
 
-function_map = {'get_weather': get_weather, 
-                'get_stock_price': get_stock_price}
+function_map = {'insert_reservation': insert_reservation,
+                'check_reservation_availability': check_reservation_availability}
 
 tools = [
-  {
-      "type": "function",
-      "function": {
-          "name": "get_weather",
-          "strict": True,
-          "parameters": {
-              "type": "object",
-              "properties": {
-                  "location": {"type": "string"},
-                  "unit": {"type": "string", "enum": ["c", "f"]},
-              },
-              "required": ["location", "unit"],
-              "additionalProperties": False,
-          },
-      },
-  },
-  {
-      "type": "function",
-      "function": {
-          "name": "get_stock_price",
-          "strict": True,
-          "parameters": {
-              "type": "object",
-              "properties": {
-                  "symbol": {"type": "string"},
-              },
-              "required": ["symbol"],
-              "additionalProperties": False,
-          },
-      },
-  },
+    {
+        "type": "function",
+        "function": {
+            "name": "check_reservation_availability",
+            "description": "Checks if a reservation is available for a given object and time range.",
+            "strict": True,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reservation_object": {
+                        "type": "string",
+                        "description": "The object for which the reservation is being made.",
+                        "enum": ["Projetor", "Multímetro", "Carro"]
+                    },
+                    "start_datetime": {
+                        "type": "string",
+                        "description": "The start date of the reservation in the format 'YYYY-MM-DD HH:MM:SS'."
+                    },
+                    "end_datetime": {
+                        "type": "string",
+                        "description": "The end date of the reservation in the format 'YYYY-MM-DD HH:MM:SS'."
+                    },
+                },
+                "required": ["reservation_object","start_datetime", "end_datetime"],
+                "additionalProperties": False
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "insert_reservation",
+            "description": "Checks if a reservation is available for a given object and time range, and inserts it into the database if it is.",
+            "strict": True,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reservation_object": {
+                        "type": "string",
+                        "description": "The object for which the reservation is being made.",
+                        "enum": ["Projetor", "Multímetro", "Carro"]
+                    },
+                    "start_datetime": {
+                        "type": "string",
+                        "description": "The start date of the reservation in the format 'YYYY-MM-DD HH:MM:SS'."
+                    },
+                    "end_datetime": {
+                        "type": "string",
+                        "description": "The end date of the reservation in the format 'YYYY-MM-DD HH:MM:SS'."
+                    },
+                },
+                "required": ["reservation_object","start_datetime", "end_datetime"],
+                "additionalProperties": False
+            }
+        }
+    }
 ]
